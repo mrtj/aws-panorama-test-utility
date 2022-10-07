@@ -1,0 +1,6 @@
+boto3
+dlr
+ipython
+matplotlib
+numpy
+opencv-python-headless
