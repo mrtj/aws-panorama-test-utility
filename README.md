@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repo contains the code AWS Panorama Test Utility, forked from the official [AWS Panorama Sample](https://github.com/aws-samples/aws-panorama-samples) repo. The purpose of having the test utility in a separate repo is to be able to use it without having to clone the whole original repo (that is bigger than 300Mbyte). All documentations and license is from the original repo. Please report bugs in the original repo as well as, and open pull requests in this repo only if the original repo is updated.
+This repo contains the code AWS Panorama Test Utility, forked from the official [AWS Panorama Samples](https://github.com/aws-samples/aws-panorama-samples) repo. The purpose of having the test utility in a separate repo is to be able to use it without having to clone the whole original repo (that is bigger than 300Mbyte). All documentations and license is from the original repo. Please report bugs in the original repo as well as, and open pull requests in this repo only if the original repo is updated.
 
 ## About Test Utility
 
