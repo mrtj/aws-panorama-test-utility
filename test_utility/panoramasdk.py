@@ -47,9 +47,9 @@ class TestUtilityEndOfVideo(TestUtilityBaseError):
 # -------
 
 def _configure( config ):
-    
+
     global _c
-    
+
     _c = config
 
 
@@ -159,13 +159,13 @@ class media(object):
         """Hardcoded Value for Now"""
 
         return 'cam1'
-    
+
     @property
     def stream_id(self):
         """Hardcoded Value for Now"""
 
         return 'cam1_id'
-    
+
     @property
     def is_cached(self):
         """Hardcoded Value for Now"""
@@ -200,10 +200,10 @@ class Video_Array(object):
         assert _c.video_range.step > 0, "Config.video_range.step has to be positive integer."
 
     def get_frame(self):
-        
+
         if not os.path.exists(self.input_path):
             raise FileNotFoundError( self.input_path )
-        
+
         cap = cv2.VideoCapture(self.input_path)
         frame_num = 0
 
@@ -211,18 +211,18 @@ class Video_Array(object):
         for i in range(0,_c.video_range.start):
             _, frame = cap.read()
             frame_num += 1
-            
+
             if frame is None:
                 return
 
         while (frame_num <= _c.video_range.stop):
-            
+
             _, frame = cap.read()
             frame_num += 1
 
             if frame is None:
                 return
-            
+
             # Reading frame one by one to reduce memory space
             yield frame
 
@@ -244,7 +244,7 @@ class MediaSourceRtspCameraPort(PortImpl):
             return [media(next(self.video_obj))]
         except StopIteration:
             raise TestUtilityEndOfVideo("Reached end of video")
-    
+
 class ParameterPort(PortImpl):
     def __init__( self, producer_node ):
         self.producer_node = producer_node
@@ -252,39 +252,39 @@ class ParameterPort(PortImpl):
     def get(self):
         return self.producer_node.node_elm["value"]
 
-    
+
 class HdmiDataSinkPort(PortImpl):
 
     def __init__(self):
         self.screenshot_n_frame = 0
 
     def put( self, data ):
-    
+
         media_list = data
 
         if _c.screenshot_dir:
             for i_media, media_obj in enumerate(media_list):
                 filename = f"{_c.screenshot_dir}/screenshot_%d_%04d.png" % ( i_media, self.screenshot_n_frame )
                 cv2.imwrite( filename, media_obj.image )
-            
+
             self.screenshot_n_frame += 1
-        
+
         if _c.render_output_image_with_pyplot:
             for media_obj in media_list:
                 IPython.display.clear_output(wait=True)
                 plt.imshow( cv2.cvtColor(media_obj.image,cv2.COLOR_BGR2RGB) )
                 plt.show()
-    
+
 class port:
-    
+
     def __init__( self, producer_node=None, consumer_node=None ):
-    
+
         assert producer_node or consumer_node
         assert producer_node is None or consumer_node is None
-    
+
         self.producer_node = producer_node
         self.consumer_node = consumer_node
-    
+
         if self.producer_node:
             if isinstance( self.producer_node, panorama_test_utility_graph.MediaSourceRtspCameraNode ):
                 self.impl = MediaSourceRtspCameraPort()
@@ -292,27 +292,27 @@ class port:
                 self.impl = ParameterPort( self.producer_node )
             else:
                 raise ValueError( "Unsupported producer node type", type(self.producer_node) )
-        
+
         else:
             if isinstance( self.consumer_node, panorama_test_utility_graph.HdmiDataSinkNode):
                 self.impl = HdmiDataSinkPort()
             else:
                 raise ValueError( "Unsupported consumer node type", type(self.consumer_node) )
-    
+
     def get(self):
-        
+
         if not self.producer_node:
             raise ValueError( "port.get is supported only by input ports" )
-            
+
         return self.impl.get()
 
     def put( self, data ):
 
         if not self.consumer_node:
             raise ValueError( "port.put is supported only by output ports" )
-        
+
         return self.impl.put(data)
-    
+
 
 class node(object):
     """
@@ -326,17 +326,17 @@ class node(object):
     Methods
     -------
     """
-    
+
     # Add properties and methods to the instance
     @staticmethod
     def _initialize(instance):
-        
+
         graph = panorama_test_utility_graph.Graph()
         graph.load(
             app_dir_top = f"./{_c.app_name}",
             app_name = _c.app_name,
         )
-        
+
         class Ports:
             pass
 
@@ -344,7 +344,7 @@ class node(object):
         for name, producer_node in graph.business_logic_node.inputs.items():
             print( "Initializing input port", name, producer_node )
             setattr( instance.inputs, name, port(producer_node = producer_node) )
-        
+
         instance.outputs = Ports()
         for name, consumer_node in graph.business_logic_node.outputs.items():
             print( "Initializing output port", name, consumer_node )
@@ -363,10 +363,10 @@ class node(object):
 
         return instance
 
-    # Instantiate DLRModel when it is used for the first time, 
+    # Instantiate DLRModel when it is used for the first time,
     # and check if the model node/interface are correctly defined in JSON files
     def _load_dlr_model( self, name ):
-        
+
         # Instantiate DLRModel
         model_path = _c.models[ name ]  + "-" + _c.compiled_model_suffix
         model = dlr.DLRModel( model_path )

@@ -62,7 +62,7 @@ def test_utility_run_main( argv = None ):
         # video file path to simulate camera stream
         videoname = args.video_file,
         video_range = range( int(args.video_start), int(args.video_stop), int(args.video_step) ),
-    
+
         # Suppress rendering output by pyplot, and write screenshots in PNG files
         render_output_image_with_pyplot = args.output_pyplot,
         screenshot_dir = screenshot_dir_dt_resolved,
@@ -92,17 +92,17 @@ def test_utility_run_main( argv = None ):
         if args.output_pyplot:
             sys.stdout = NullStdout()
             sys.stderr = NullStdout()
-            
+
         # Tentatively add the directory of the source code into sys.path, so that app can load modules from there.
         py_dir = os.path.dirname(args.py_file)
         sys.path.insert( 0, py_dir )
 
         try:
             namespace = {}
-        
+
             code = compile( file_image, name, 'exec' )
             exec( code, namespace, namespace )
-            
+
         except panorama_test_utility.panoramasdk.TestUtilityEndOfVideo:
             print( "Reached end of video. Stopped simulation." )
 

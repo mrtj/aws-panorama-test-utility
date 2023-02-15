@@ -54,7 +54,7 @@ def test_utility_compile_main():
         else:
             raw_model_stat = os.stat( raw_model_file )
             compiled_model_stat = os.stat( compiled_model_file )
-    
+
             if raw_model_stat.st_mtime > compiled_model_stat.st_mtime:
                 print( "Raw model file has newer timestamp than compiled model file. Need compilation." )
                 need_model_compilation = True
