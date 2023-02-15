@@ -360,7 +360,7 @@ class node(object):
     # This method is automatically called even if it is not called explicitly
     def __new__(cls, *args, **kwargs):
 
-        instance = super(node,cls).__new__(cls, *args, **kwargs)
+        instance = super(node,cls).__new__(cls)
 
         node._initialize( instance )
 
