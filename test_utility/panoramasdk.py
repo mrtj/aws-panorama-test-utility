@@ -92,7 +92,8 @@ class media(object):
 
     """
 
-    def __init__(self, array):
+    def __init__(self, ts, array):
+        self.ts = ts
         self.image = array
         self.w, self.h, self.c = array.shape
 
@@ -151,7 +152,7 @@ class media(object):
     @property
     def time_stamp(self):
         micro = 1000000
-        t = int( time.time() * micro )
+        t = int( self.ts * micro )
         return ( t // micro, t % micro )
 
     @property
@@ -200,11 +201,13 @@ class Video_Array(object):
         assert _c.video_range.step > 0, "Config.video_range.step has to be positive integer."
 
     def get_frame(self):
+        start_ts = time.time()
 
         if not os.path.exists(self.input_path):
             raise FileNotFoundError( self.input_path )
 
         cap = cv2.VideoCapture(self.input_path)
+        fps = cap.get(cv2.CAP_PROP_FPS)
         frame_num = 0
 
         # Skip first frames based on video_range.start
@@ -218,13 +221,14 @@ class Video_Array(object):
         while (frame_num <= _c.video_range.stop):
 
             _, frame = cap.read()
+            ts = start_ts + frame_num / fps
             frame_num += 1
 
             if frame is None:
                 return
 
             # Reading frame one by one to reduce memory space
-            yield frame
+            yield ts, frame
 
             # Skip frames based on video_range.step
             for i in range(1,_c.video_range.step):
@@ -241,7 +245,8 @@ class MediaSourceRtspCameraPort(PortImpl):
 
     def get(self):
         try:
-            return [media(next(self.video_obj))]
+            ts, frame = next(self.video_obj)
+            return [media(ts, frame)]
         except StopIteration:
             raise TestUtilityEndOfVideo("Reached end of video")
 
@@ -385,4 +390,3 @@ class node(object):
         assert isinstance( output, list ), f"Unexpected output type {type(output)}"
 
         return tuple(output)
-
