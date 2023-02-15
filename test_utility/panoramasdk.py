@@ -372,7 +372,10 @@ class node(object):
     # and check if the model node/interface are correctly defined in JSON files
     def _load_dlr_model( self, name ):
 
+        print('panoramasdk config.models:', _c.models)
         # Instantiate DLRModel
+        if name not in _c.models:
+            raise RuntimeError(f'{name} model was not found. Available models: {list(_c.models.keys())}')
         model_path = _c.models[ name ]  + "-" + _c.compiled_model_suffix
         model = dlr.DLRModel( model_path )
         self._dlr_models[name] = model
